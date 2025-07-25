@@ -1,4 +1,5 @@
 $(document).ready(function() {
+    // Handle form submission
     $('#validationForm').on('submit', function(event) {
         event.preventDefault(); // Prevent form submission
 
@@ -30,35 +31,42 @@ $(document).ready(function() {
             isValid = false;
         }
 
+        // Confirm password validation
+        const confirmPassword = $('#confirmPassword').val();
+        if (password !== confirmPassword) {
+            $('#confirmPasswordError').text('Passwords do not match.').show();
+            isValid = false;
+        }
+
         // If all validations pass
         if (isValid) {
             $('#successMessage').text('Form submitted successfully!').show();
-            // Here you can add code to actually submit the form if needed
         }
     });
 
     // Toggle password visibility
-    $('#togglePassword').on('click', function() {
-        const passwordField = $('#password');
-        const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
-        passwordField.attr('type', type);
-        $(this).text(type === 'password' ? 'Show' : 'Hide');
+    $('.toggle-password').on('click', function() {
+        const targets = $(this).data('target').split(',');
+        targets.forEach(target => {
+            const passwordField = $(target);
+            const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
+            passwordField.attr('type', type);
+        });
+        $(this).text($(this).text() === 'Show' ? 'Hide' : 'Show');
     });
+
+    // Validation functions
+    function validateEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+    function validatePhone(phone) {
+        return /^\d{10}$/.test(phone);
+    }
+
+    function validatePassword(password) {
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+        return regex.test(password);
+    }
 });
-
-// Email validation function
-function validateEmail(email) {
-    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return regex.test(email);
-}
-
-// Phone number validation function
-function validatePhone(phone) {
-    return /^\d{10}$/.test(phone);
-}
-
-// Password validation function
-function validatePassword(password) {
-    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    return regex.test(password);
-}

@@ -62,8 +62,10 @@ $(document).ready(function() {
     }
 
     function validatePhone(phone) {
-        return /^\d{10}$/.test(phone);
-    }
+    // Trim and check if the phone contains only 10 digits
+    return /^[0-9]{10}$/.test(phone.trim());
+}
+
 
     function validatePassword(password) {
         const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;

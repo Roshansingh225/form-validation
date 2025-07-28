@@ -1,74 +1,45 @@
-$(document).ready(function() {
-    // Handle form submission
-    $('#validationForm').on('submit', function(event) {
-        event.preventDefault(); // Prevent form submission
+document.addEventListener('DOMContentLoaded', () => {
+    const phoneInput = document.getElementById('phone');
+    const form = document.getElementById('validationForm');
+    const successMessage = document.getElementById('successMessage');
 
-        // Clear previous messages
-        $('.error-message').hide();
-        $('#successMessage').hide();
-
-        // Validate inputs
-        let isValid = true;
-
-        // Email validation
-        const email = $('#email').val();
-        if (!validateEmail(email)) {
-            $('#emailError').text('Please enter a valid email address.').show();
-            isValid = false;
-        }
-
-        // Phone number validation
-        const phone = $('#phone').val();
-        if (!validatePhone(phone)) {
-            $('#phoneError').text('Phone number must be exactly 10 digits.').show();
-            isValid = false;
-        }
-
-        // Password validation
-        const password = $('#password').val();
-        if (!validatePassword(password)) {
-            $('#passwordError').text('Password must be at least 8 characters long and include uppercase, lowercase, and numbers.').show();
-            isValid = false;
-        }
-
-        // Confirm password validation
-        const confirmPassword = $('#confirmPassword').val();
-        if (password !== confirmPassword) {
-            $('#confirmPasswordError').text('Passwords do not match.').show();
-            isValid = false;
-        }
-
-        // If all validations pass
-        if (isValid) {
-            $('#successMessage').text('Form submitted successfully!').show();
+    // Only allow digits and limit to 10 characters
+    phoneInput.addEventListener('input', () => {
+        phoneInput.value = phoneInput.value.replace(/\D/g, ''); // Remove non-digits
+        if (phoneInput.value.length > 10) {
+            phoneInput.value = phoneInput.value.slice(0, 10); // Trim to 10 digits
         }
     });
 
-    // Toggle password visibility
-    $('.toggle-password').on('click', function() {
-        const targets = $(this).data('target').split(',');
-        targets.forEach(target => {
-            const passwordField = $(target);
-            const type = passwordField.attr('type') === 'password' ? 'text' : 'password';
-            passwordField.attr('type', type);
+    // Optional: Show/hide password toggle logic
+    const toggleButtons = document.querySelectorAll('.toggle-password');
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targets = button.getAttribute('data-target').split(',');
+            targets.forEach(selector => {
+                const field = document.querySelector(selector.trim());
+                if (field.type === "password") {
+                    field.type = "text";
+                    button.textContent = "Hide";
+                } else {
+                    field.type = "password";
+                    button.textContent = "Show";
+                }
+            });
         });
-        $(this).text($(this).text() === 'Show' ? 'Hide' : 'Show');
     });
 
-    // Validation functions
-    function validateEmail(email) {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    }
-
-    function validatePhone(phone) {
-    // Trim and check if the phone contains only 10 digits
-    return /^[0-9]{10}$/.test(phone.trim());
-}
-
-
-    function validatePassword(password) {
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
-        return regex.test(password);
-    }
+    // Optional: Simple form submission message
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        if (phoneInput.value.length !== 10) {
+            document.getElementById('phoneError').textContent = "Phone number must be 10 digits.";
+            document.getElementById('phoneError').style.display = "block";
+            return;
+        } else {
+            document.getElementById('phoneError').style.display = "none";
+        }
+        successMessage.textContent = "Form submitted successfully!";
+        successMessage.style.display = "block";
+    });
 });

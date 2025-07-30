@@ -1,45 +1,62 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const phoneInput = document.getElementById('phone');
-    const form = document.getElementById('validationForm');
-    const successMessage = document.getElementById('successMessage');
-
-    // Only allow digits and limit to 10 characters
-    phoneInput.addEventListener('input', () => {
-        phoneInput.value = phoneInput.value.replace(/\D/g, ''); // Remove non-digits
-        if (phoneInput.value.length > 10) {
-            phoneInput.value = phoneInput.value.slice(0, 10); // Trim to 10 digits
-        }
-    });
-
-    // Optional: Show/hide password toggle logic
-    const toggleButtons = document.querySelectorAll('.toggle-password');
-    toggleButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targets = button.getAttribute('data-target').split(',');
-            targets.forEach(selector => {
-                const field = document.querySelector(selector.trim());
-                if (field.type === "password") {
-                    field.type = "text";
-                    button.textContent = "Hide";
-                } else {
-                    field.type = "password";
-                    button.textContent = "Show";
-                }
-            });
-        });
-    });
-
-    // Optional: Simple form submission message
-    form.addEventListener('submit', (e) => {
+$(document).ready(function () {
+    $('#validationForm').on('submit', function (e) {
         e.preventDefault();
-        if (phoneInput.value.length !== 10) {
-            document.getElementById('phoneError').textContent = "Phone number must be 10 digits.";
-            document.getElementById('phoneError').style.display = "block";
-            return;
+
+        const phone = $('#phone').val();
+        const password = $('#password').val();
+        const confirmPassword = $('#confirmPassword').val();
+        let isValid = true;
+
+        // Phone Validation - digits only and length 10
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(phone)) {
+            $('#phoneError').text('Phone number must be exactly 10 digits and contain only numbers.').show();
+            isValid = false;
         } else {
-            document.getElementById('phoneError').style.display = "none";
+            $('#phoneError').hide();
         }
-        successMessage.textContent = "Form submitted successfully!";
-        successMessage.style.display = "block";
+
+        // Password Validation
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,15}$/;
+        if (!passwordRegex.test(password)) {
+            $('#passwordError').text('Password must be 8-15 characters, include at least 1 uppercase letter, 1 number, and 1 special character.').show();
+            isValid = false;
+        } else {
+            $('#passwordError').hide();
+        }
+
+        // Confirm Password Match
+        if (password !== confirmPassword) {
+            $('#confirmPasswordError').text('Passwords do not match.').show();
+            isValid = false;
+        } else {
+            $('#confirmPasswordError').hide();
+        }
+
+        if (isValid) {
+            $('#successMessage').text('Form submitted successfully!').show();
+        } else {
+            $('#successMessage').hide();
+        }
+    });
+
+    // Restrict phone input to digits only while typing
+    $('#phone').on('input', function () {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10); // Allow only digits and max 10
+    });
+
+    // Toggle password visibility
+    $('.toggle-password').on('click', function () {
+        const targets = $(this).data('target').split(',');
+        targets.forEach(id => {
+            const input = $(id.trim());
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                $(this).text('Hide');
+            } else {
+                input.attr('type', 'password');
+                $(this).text('Show');
+            }
+        });
     });
 });
